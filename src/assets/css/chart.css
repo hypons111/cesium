@@ -1,0 +1,14 @@
+.small {
+  height: calc(100% / 3 - 0.5em);
+}
+
+.normal {
+  height: calc((100% / 3) * 1.5 - 0.5em);
+}
+
+.large {
+  height: calc((100% / 3) * 2 - 0.5em);
+}
+
+.chartContainer {
+}
