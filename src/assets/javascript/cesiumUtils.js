@@ -458,7 +458,6 @@ export async function setCamera(cameraData) {
 
 /* 移動視角 */
 export async function flyCamera(cameraData) {
-  console.log(cameraData)
   cesiumMenuData.value.show = false;
   const destination = Cesium.Cartesian3.fromDegrees(
     cameraData.x,

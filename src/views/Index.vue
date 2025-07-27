@@ -12,11 +12,11 @@
     </div>
 
     <div id="leftContainer">
-      <!-- <LeftPanel v-if="currentSection === 'section1'" /> -->
+      <LeftPanel v-if="currentSection === 'section1'" />
     </div>
 
     <div id="rightContainer">
-      <!-- <RightPanel v-if="currentSection === 'section1' || currentSection === 'section3'" /> -->
+      <RightPanel v-if="currentSection === 'section1' || currentSection === 'section3'" />
     </div>
 
     <div id="footerContainer">

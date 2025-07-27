@@ -13,26 +13,70 @@
     </div>
 
     <div id="treeContainer">
-      <el-form label-width="auto">
-        <el-form-item label="查詢">
-          <el-input v-model="keyword" type="text" placeholder="請輸入關鍵字" autocomplete="off" />
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="query()">查詢</el-button>
-          <el-button @click="reset">清除</el-button>
-        </el-form-item>
-      </el-form>
-
       <el-tree :data="tagData" default-expand-all :expand-on-click-node="false" :render-content="renderTree" />
     </div>
 
-    <div id="treeFooterContainer">FOOTER</div>
+   <el-dialog
+    v-model="dialogVisible"
+    title="新增 Tag"
+    width="300"
+    :before-close="handleClose"
+  >
+    <el-form :model="dialogForm" ref="dialogRuleFormRef" label-width="auto">
+
+      <el-form-item class="hide" label="parentId" :prop="'parentId'">
+        <el-input v-model="dialogForm.parentId"/>
+      </el-form-item>
+
+      <el-form-item label="名稱" :prop="'label'">
+        <el-input v-model="dialogForm.label" placeholder="請輸入 Tag 名稱" />
+      </el-form-item>
+      
+      <el-form-item label="樣式" :prop="'billboard'">
+        <el-select v-model="dialogForm.billboard" placeholder="請選擇 Tag 樣式">
+          <el-option
+            v-for="billboard in billboardOptions"
+            :key="billboard.value"
+            :label="billboard.label"
+            :value="billboard.value"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="經度" :prop="'x'">
+        <el-input v-model="dialogForm.x" placeholder="請輸入 Tag 經度"/>
+      </el-form-item>
+
+      <el-form-item label="緯度" :prop="'y'">
+        <el-input v-model="dialogForm.y" placeholder="請輸入 Tag 緯度"/>
+      </el-form-item>
+
+      <el-form-item label="高度" :prop="'z'">
+        <el-input v-model="dialogForm.z" placeholder="請輸入 Tag 高度"/>
+      </el-form-item>
+
+      <el-form-item label="大小" :prop="'s'">
+        <el-input v-model="dialogForm.s" placeholder="請輸入 Tag 大小"/>
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="tagDialogHandler('close')">Cancel</el-button>
+        <el-button type="primary" @click="tagDialogHandler('append')">
+          Confirm
+        </el-button>
+      </div>
+    </template>
+
+  </el-dialog>
+    
 
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import 'element-plus/dist/index.css';
 import { addTagEntity, removeTagEntity, flyCamera } from '@/assets/javascript/cesiumUtils';
 import axios from "axios";
@@ -60,8 +104,8 @@ function renderTree(h, { node, data }) {
       { class: 'custom-tree-row' },
       h('a', { id: data.id, class: `zoom zoom_${data.billboard}`, onClick: () => onClickZoom(data) }, ""),
       h('a', { id: data.id, class: `eye${data.status}`, onClick: () => onClickEye(data, node) }, ""),
-      h('a', { class: 'plus', onClick: () => append(data) }, '+'), // 增加節點
-      h('a', { class: 'minus', onClick: () => remove(node, data) }, '-')  // 移除節點
+      h('a', { class: `plus plus_${data.type}`, onClick: () => tagDialogHandler("open", data)}, '+'), // 增加節點
+      h('a', { class: `minus minus_${data.type}`, onClick: () => remove(node, data) }, '-')  // 移除節點
     )
   )
 }
@@ -114,7 +158,6 @@ function onClickZoom(nodeData) {
 
 // 點擊眼睛 icon
 async function onClickEye(nodeData, node) {
-
   /* 清除全部 tag */
   removeTagEntity();
 
@@ -169,31 +212,81 @@ async function onClickEye(nodeData, node) {
   await addTagHandler(tagData.value);
 }
 
-// 查詢關鍵字
-function query() {
-  console.log(keyword.value)
-};
-
-// 重設關鍵字 input
-function reset() {
-  keyword.value = ''
-}
+const billboardOptions = [
+  {
+    value: 'GREEN_TAG',
+    label: 'GREEN_TAG',
+  },
+  {
+    value: 'RED_TAG',
+    label: 'RED_TAG',
+  },
+  {
+    value: 'SUCCESS_TAG',
+    label: 'SUCCESS_TAG',
+  },
+  {
+    value: 'WARNNING_TAG',
+    label: 'WARNNING_TAG',
+  },
+]
 
 
 // 增加 tree 節點
 // 參考 renderContent() 
-function append(data) {
-  const newChild = { id: id++, label: 'testtest', children: [] }
-  if (!data.children) {
-    data.children = []
+const dialogRuleFormRef = ref();
+const dialogForm = reactive({
+  id: "18",
+  parentId: "",
+  label: "",
+  billboard: "",
+  x: "", // 121.53399553220129
+  y: "", // 25.292098729202575
+  z: "1",
+  s: "0.5"
+});
+
+const dialogVisible = ref(false)
+
+function tagDialogHandler(option, data=null) {
+  switch(option) {
+    case "open":
+      dialogForm.parentId = data.id;
+      dialogVisible.value = true;
+      break
+    case "append":
+      append()
+      tagDialogHandler("close")
+      break
+    case "close":
+      dialogRuleFormRef.value.resetFields();
+      dialogVisible.value = false;
+      break
   }
-  data.children.push(newChild)
+}
+
+function append() {
+  const newTag = {
+    "id": 18,
+    "type": "entity",
+    "label": dialogForm.label,
+    "billboard": dialogForm.billboard,
+    "x": Number(dialogForm.x),
+    "y": Number(dialogForm.y),
+    "z": Number(dialogForm.z),
+    "s": Number(dialogForm.s),
+    "status": 2
+  }
+  const parent = tagData.value.find(({id}) => id === dialogForm.parentId)
+  parent.children.push(newTag)
   tagData.value = [...tagData.value]
+  addTagEntity(newTag)
 }
 
 // 移除 tree 節點
 // 參考 renderContent() 
 function remove(node, data) {
+  alert('需要接 end point')
   const parent = node.parent
   const children = parent.data.children || parent.data
   const index = children.findIndex((d) => d.id === data.id)
@@ -270,6 +363,12 @@ function remove(node, data) {
       .zoom_undefined {
         display: none;
       }
+      .plus_entity {
+        display: none;
+      }
+      .minus_category {
+        display: none;
+      }
 
       .eye0 {
         width: 1em;
@@ -314,6 +413,10 @@ function remove(node, data) {
     height: 3em;
     color: white;
     border-top: 2px solid rgb(var(--CYAN));
+  }
+
+  .hide {
+    display: none;
   }
 }
 </style>
