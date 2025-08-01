@@ -70,13 +70,12 @@
     </template>
 
   </el-dialog>
-    
 
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import 'element-plus/dist/index.css';
 import { addTagEntity, removeTagEntity, flyCamera } from '@/assets/javascript/cesiumUtils';
 import axios from "axios";
@@ -90,9 +89,25 @@ const keyword = ref('');
 /* el-tree 新增的節點起始 id */
 let id = 1000;
 let treeNodeLevel = 0
-onMounted(() => {
-  switchTree("device");
-})
+/* Tag icon 選單 */
+const billboardOptions = [
+  {
+    value: 'GREEN_TAG',
+    label: 'GREEN_TAG',
+  },
+  {
+    value: 'RED_TAG',
+    label: 'RED_TAG',
+  },
+  {
+    value: 'SUCCESS_TAG',
+    label: 'SUCCESS_TAG',
+  },
+  {
+    value: 'WARNNING_TAG',
+    label: 'WARNNING_TAG',
+  },
+]
 
 // 產生 tree
 function renderTree(h, { node, data }) {
@@ -212,26 +227,6 @@ async function onClickEye(nodeData, node) {
   await addTagHandler(tagData.value);
 }
 
-const billboardOptions = [
-  {
-    value: 'GREEN_TAG',
-    label: 'GREEN_TAG',
-  },
-  {
-    value: 'RED_TAG',
-    label: 'RED_TAG',
-  },
-  {
-    value: 'SUCCESS_TAG',
-    label: 'SUCCESS_TAG',
-  },
-  {
-    value: 'WARNNING_TAG',
-    label: 'WARNNING_TAG',
-  },
-]
-
-
 // 增加 tree 節點
 // 參考 renderContent() 
 const dialogRuleFormRef = ref();
@@ -293,6 +288,14 @@ function remove(node, data) {
   children.splice(index, 1)
   tagData.value = [...tagData.value]
 }
+
+onMounted(() => {
+  switchTree("device");
+})
+
+onUnmounted(() => {
+  removeTagEntity() // 離開 Tag 頁面時清除全部 tag entity
+})
 </script>
 
 <style>
