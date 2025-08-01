@@ -3,20 +3,18 @@
     <div id="headerContainer">
       <Header />
     </div>
-
-    <div id="mainContainer">
-      <Cesium :key="currentModel" v-if="currentSection === 'section1' || currentSection === 'section3'" />
-      <Section2 v-if="currentSection === 'section2'" />
-      <Section4 v-if="currentSection === 'section4'" />
-      <Section5 v-if="currentSection === 'section5'" />
+    
+    <div id="leftContainer">
+      <LeftPanel v-if="currentSection === 'panel'" />
     </div>
 
-    <div id="leftContainer">
-      <LeftPanel v-if="currentSection === 'section1'" />
+    <div id="mainContainer">
+      <Cesium :key="currentModel" v-if="currentSection === 'cesium' || currentSection === 'panel' || currentSection === 'tag'" />
+      <Information v-if="currentSection === 'information'" />
     </div>
 
     <div id="rightContainer">
-      <RightPanel v-if="currentSection === 'section1' || currentSection === 'section3'" />
+      <RightPanel v-if="currentSection === 'panel' || currentSection === 'tag'" />
     </div>
 
     <div id="footerContainer">
@@ -33,9 +31,7 @@ import Footer from "@/components/Footer.vue"
 import LeftPanel from "@/components/LeftPanel.vue"
 import RightPanel from "@/components/RightPanel.vue"
 import Cesium from "@/components/Cesium.vue"      // 儀表板
-import Section2 from "@/components/Section2.vue"  // 事件查詢
-import Section4 from "@/components/Section4.vue"  // 航港局 AIS 系統
-import Section5 from "@/components/Section5.vue"  // 報表
+import Information from "@/components/Information.vue"
 
 const store = useStore();
 const currentSection = computed(() => store.getters.CURRENT_SECTION);

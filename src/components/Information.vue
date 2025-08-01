@@ -1,6 +1,6 @@
 <template>
-  <div id="report">
-    <div id="reportComponent">
+  <div id="information">
+    <div id="informationComponent">
       <aside>
         <nav>
           <a :class="{currentReport : currentReport==='a'}" @click="switchReport('a')">AIS資料查詢</a>
@@ -11,12 +11,12 @@
       </aside>
       <main>
 
-        <el-table id="report_a" class="reportTable" :data="tableData.data" v-if="currentReport === 'a'">
+        <el-table id="information_a" class="informationTable" :data="tableData.data" v-if="currentReport === 'a'">
           <el-table-column v-for="item in tableData.header" :key="item.propKey" :prop="item.propKey" :label="item.label"
             :formatter="item.formatter" />
         </el-table>
 
-        <div id="report_b" class="report_b" v-if="currentReport === 'b'">
+        <div id="information_b" class="information_b" v-if="currentReport === 'b'">
           <el-form ref="form">
 
             <el-form-item class="labelWrapper" label="abcabcabcabcabc">
@@ -49,18 +49,18 @@
 
           </el-form>
 
-          <el-table class="reportTable" :data="tableData.data">
+          <el-table class="informationTable" :data="tableData.data">
             <el-table-column v-for="item in tableData.header" :key="item.propKey" :prop="item.propKey"
               :label="item.label" :formatter="item.formatter" />
           </el-table>
         </div>
 
-        <el-table id="report_c" class="reportTable" :data="tableData.data" v-if="currentReport === 'c'">
+        <el-table id="information_c" class="informationTable" :data="tableData.data" v-if="currentReport === 'c'">
           <el-table-column v-for="item in tableData.header" :key="item.propKey" :prop="item.propKey" :label="item.label"
             :formatter="item.formatter" />
         </el-table>
 
-        <el-table id="report_d" class="reportTable" :data="tableData.data" v-if="currentReport === 'd'">
+        <el-table id="information_d" class="informationTable" :data="tableData.data" v-if="currentReport === 'd'">
           <template v-for="item in tableData.header" :key="item.propKey">
             <el-table-column v-if="item.propKey !== 'b'" :prop="item.propKey" :label="item.label"
               :formatter="item.formatter" />
@@ -109,12 +109,12 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-#report {
+#information {
   height: calc(100% - 6.5rem - 3rem); // 6.5em:header; 3em:footer
   overflow: hidden;
   margin-top: 6.5em; // header 距離
 
-  #reportComponent {
+  #informationComponent {
     height: 100%;
     display: flex;
     background-color: rgba(var(--BLACK), 0.5);
@@ -152,7 +152,7 @@ onMounted(() => {
       flex-grow: 1;
       padding: 0 1rem;
 
-      .reportTable {
+      .informationTable {
         height: 100%;
         --el-table-border: 1px solid transparent;
         --el-table-bg-color: transparent;
@@ -185,11 +185,11 @@ onMounted(() => {
   }
 }
 
-#report_a {}
+#information_a {}
 
 
 
-#report_b {
+#information_b {
 
   ::v-deep .el-form {
     width: 100%;
@@ -240,7 +240,7 @@ onMounted(() => {
   }
 }
 
-#report_d {
+#information_d {
   .el-tag {
     width: 4rem;
     font-size: 1rem;

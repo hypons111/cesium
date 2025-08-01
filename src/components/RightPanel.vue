@@ -1,8 +1,8 @@
 <template>
   <div id="RightPanel" class="panel">
-    <Information_S v-if="currentSection === 'section1'"/>
-    <TemperatureLineChart_S v-if="currentSection === 'section1'"/>
-    <Tree v-if="currentSection === 'section3'"/>
+    <Information_S v-if="currentSection === 'panel'"/>
+    <TemperatureLineChart_S v-if="currentSection === 'panel'"/>
+    <Tag v-if="currentSection === 'tag'"/>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import { computed } from "vue"
 import { useStore } from "vuex"
 import Information_S from "@/components/parts/Information_S.vue"
 import TemperatureLineChart_S from "@/components/parts/TemperatureLineChart_S.vue"
-import Tree from "@/components/parts/Tree.vue"
+import Tag from "@/components/parts/Tag.vue"
 
 const store = useStore();
 const currentSection = computed(() => store.getters.CURRENT_SECTION);

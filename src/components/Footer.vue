@@ -1,37 +1,21 @@
 <template>
 	<div id="footer">
 		<ul id="sectionBtnGroup">
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section1' }" @click="currentSection = 'section1'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'cesium' }" @click="currentSection = 'cesium'">
 				<font-awesome-icon icon="fa-solid fa-house" />
-				<p>頁面1</p>
+				<p>Cesium</p>
 			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section2' }" @click="currentSection = 'section2'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'panel' }" @click="currentSection = 'panel'">
+				<font-awesome-icon icon="fa-solid fa-house" />
+				<p>Panel</p>
+			</li>
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'tag' }" @click="currentSection = 'tag'">
 				<font-awesome-icon icon="fa-solid fa-solar-panel" />
-				<p>頁面2</p>
+				<p>Tag</p>
 			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section3' }" @click="currentSection = 'section3'">
-				<font-awesome-icon :icon="['fas', 'bullhorn']" />
-				<p>頁面3</p>
-			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section4' }" @click="currentSection = 'section4'">
-				<font-awesome-icon :icon="['fas', 'door-closed']" />
-				<p>頁面4</p>
-			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section5' }" @click="currentSection = 'section5'">
-				<font-awesome-icon :icon="['fas', 'location-dot']" />
-				<p>頁面5</p>
-			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section6' }" @click="currentSection = 'section6'">
-				<font-awesome-icon :icon="['fas', 'link']" />
-				<p>頁面6</p>
-			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section7' }" @click="currentSection = 'section7'">
-				<font-awesome-icon :icon="['fas', 'vr-cardboard']" />
-				<p>頁面7</p>
-			</li>
-			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section8' }" @click="currentSection = 'section8'">
-				<font-awesome-icon :icon="['fas', 'cubes-stacked']" />
-				<p>頁面8</p>
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'information' }" @click="currentSection = 'information'">
+				<font-awesome-icon icon="fa-solid fa-solar-panel" />
+				<p>Information</p>
 			</li>
 		</ul>
 	</div>
