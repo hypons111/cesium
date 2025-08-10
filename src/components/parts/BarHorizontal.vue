@@ -1,5 +1,5 @@
 <template>
-  <div id="StackedLineChart" class="svgContainer small">
+  <div id="barHorizontal" class="svgContainer" :class="props.size">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -29,42 +29,35 @@ import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
 import "@/assets/css/svg.css"
 
+const props = defineProps({
+  size: { type: String, default: "normal" },
+  title: { type: String, default: "Bar Horizontal" },
+  data: { required: true }
+})
+
 const chartContainer = ref(null);
-const fakeChartData = ref({
-  title: "溫度變化",
-  xData: ['6/17', '6/18', '6/19', '6/20', '6/21', '6/22', '6/23'],
-  series: [
-    {
-      name: '溫度',
-      type: 'line',
-      data: [10, 11, 13, 11, 12, 12, 9],
-    },
-    {
-      name: '濕度',
-      type: 'line',
-      data: [80, 85, 86, 86, 85, 75, 80],
-    }
-  ]
-}
-);
 
 function setChart() {
   const chart = echarts.init(chartContainer.value);
   chart.setOption({
     title: {
-      top: '5%',
-      left: '2.5%',
-      text: fakeChartData.value.title,
+      top: '4%',
+      left: '3%',
+      text: props.title,
       textStyle: {
         color: 'white'
       }
     },
     tooltip: {
       trigger: 'axis', // 'axis' / 'item'
+      formatter: 'Label : {a} <br/> Y軸 : {b} <br/> 值 : {c}', // 可以放各個軸的參數 
+      axisPointer: {
+        type: 'shadow' // 'shadow' / 'line'
+      }
     },
+    /* 刪除 legend 代表不顯示每種顏色代表的屬性 */
     legend: {
-      bottom: '2.5%',
-      selectedMode: true,
+      bottom: '5%',
       textStyle: {
         color: 'white'
       }
@@ -72,8 +65,8 @@ function setChart() {
     grid: {
       left: '5%',
       right: '7.25%',
-      top: '20%',
-      bottom: '15%',
+      top: '17.5%',
+      bottom: '17.5%',
       containLabel: true // 屬性是否包含在 grid 內
     },
     toolbox: {
@@ -82,17 +75,19 @@ function setChart() {
       }
     },
     xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: fakeChartData.value.xData
+      type: 'value'
     },
+
     yAxis: {
-      type: 'value',
-      axisLabel: {
-        formatter: '{value}'
-      }
+      type: 'category',
+      data: props.data.yData
     },
-    series: fakeChartData.value.series
+
+    series: props.data.series,
+
+    textStyle: {
+      color: 'white'
+    }
   });
 }
 
@@ -103,5 +98,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#StackedLineChart {}
+#stackHorizontalBarChart {}
 </style>

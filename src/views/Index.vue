@@ -5,7 +5,7 @@
     </div>
     
     <div id="leftContainer">
-      <LeftPanel v-if="currentSection === 'panel'" />
+      <PanelLeft v-if="currentSection === 'panel'" />
     </div>
 
     <div id="mainContainer">
@@ -14,7 +14,7 @@
     </div>
 
     <div id="rightContainer">
-      <RightPanel v-if="currentSection === 'panel' || currentSection === 'tag'" />
+      <PanelRight v-if="currentSection === 'panel' || currentSection === 'tag'" />
     </div>
 
     <div id="footerContainer">
@@ -28,8 +28,8 @@ import { computed } from "vue"
 import { useStore } from "vuex"
 import Header from "@/components/Header.vue"
 import Footer from "@/components/Footer.vue"
-import LeftPanel from "@/components/LeftPanel.vue"
-import RightPanel from "@/components/RightPanel.vue"
+import PanelLeft from "@/components/PanelLeft.vue"
+import PanelRight from "@/components/PanelRight.vue"
 import Cesium from "@/components/Cesium.vue"      // 儀表板
 import Information from "@/components/Information.vue"
 

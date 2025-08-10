@@ -1,5 +1,5 @@
 <template>
-  <div id="" class="svgContainer small">
+  <div id="Information" class="svgContainer small">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -11,7 +11,7 @@
     </div>
 
     <div id="contentContainer">
-      <p id="title">當前資訊</p>
+      <p id="title">Information Panel</p>
       <div id="contentGroup">
         <div id="line"></div>
         <div class="row">

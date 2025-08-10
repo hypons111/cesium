@@ -1,6 +1,6 @@
 <template>
-  <div id="DoughnutChart" class="svgContainer small">
-
+  <div id="barVertical" class="svgContainer" :class="props.size">
+    
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
         <polyline class="filled" points="1,1 15,1 1,15 1,1 15,1" /> <!-- 左上三角形 -->
@@ -24,84 +24,76 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
 import "@/assets/css/svg.css"
 
+const props = defineProps({
+  size: { type: String, default: "normal" },
+  title: { type: String, default: "Bar Vertical" },
+  data: { required: true }
+})
+
 const chartContainer = ref(null);
-const fakeChartData = ref({
-  title: "照明設備",
-  xData: ['故障', '上線', '離線'],
-  series: [
-    {
-      type: 'pie',
-      center: ['57.5%', '52.5%'],
-      radius: ['20%', '75%'],
-      data: [
-        {
-          name: '故障',
-          value: 120,
-        },
-        {
-          name: '上線',
-          value: 220
-        },
-        {
-          name: '離線',
-          value: 150
-        }
-      ],
-      /* pie 旁邊的文字 */
-      label: {
-        formatter: '{b} : {c}',
-        fontSize: 12,
-        color: 'white'
-      },
-      /* pie 旁邊的線 */
-      labelLine: {
-        length: 5,
-        length2: 5,
-      },
-    }
-  ]
-}
-);
 
 function setChart() {
   const chart = echarts.init(chartContainer.value);
   chart.setOption({
     title: {
-      top: '5%',
-      left: '2.5%',
-      text: fakeChartData.value.title,
+      top: '4%',
+      left: '3%',
+      text: props.title,
       textStyle: {
         color: 'white'
       }
     },
     tooltip: {
-      trigger: 'item',
-      // formatter: 'Label : {a} <br/> Y軸 : {b} <br/> 值 : {c}', // 可以放各個軸的參數 
+      trigger: 'axis', // 'axis' / 'item'
     },
-    /* 刪除 legend 代表不顯示每種顏色代表的屬性 */
     legend: {
-      orient: 'vertical',
-      left: '3%',
-      top: 'center',
+      bottom: '5%',
+      selectedMode: true,
       textStyle: {
         color: 'white'
       }
     },
-    series: fakeChartData.value.series,
-    textStyle: {
-      color: 'white'
+    grid: {
+      left: '5%',
+      right: '7.25%',
+      top: '20%',
+      bottom: '15%',
+      containLabel: true // 屬性是否包含在 grid 內
     },
-
     toolbox: {
       feature: {
         // saveAsImage: {}
       }
     },
+    xAxis: {
+      type: 'category',
+      boundaryGap: true,
+      data: props.data.xData
+    },
+    yAxis: {
+      type: 'value'
+    },
+    textStyle: {
+      color: 'white'
+    },
+    series: props.data.yData.map((name, sid) => {
+      return {
+        name,
+        type: 'bar',
+        stack: 'total',
+        barWidth: '60%',
+        label: {
+          show: true,
+          formatter: (params) => params.value
+        },
+        data: props.data.data[sid]
+      };
+    })
   });
 }
 
@@ -111,6 +103,4 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-#DoughnutChart {}
-</style>
+<style scoped></style>

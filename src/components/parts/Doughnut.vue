@@ -1,5 +1,5 @@
 <template>
-  <div id="StackedLineChart" class="svgContainer small">
+  <div id="doughnut" class="svgContainer" :class="props.size">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -11,7 +11,7 @@
     </div>
 
     <div id="chart" ref="chartContainer"></div>
-    
+
     <div id="bottomPatternContainer" class="patternContainer">
       <svg id="bottomPattern" class="pattern">
         <polyline class="filled" points="1,25 1,39 15,39 1,25 1,39" /> <!-- 左下三角形 -->
@@ -29,93 +29,48 @@ import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
 import "@/assets/css/svg.css"
 
+const props = defineProps({
+  size: { type: String, default: "normal" },
+  title: { type: String, default: "Bar Vertical" },
+  data: { required: true }
+})
+
 const chartContainer = ref(null);
-const fakeChartData = ref({
-  title: "Stacked Line Chart S",
-  xData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  series: [
-    {
-      name: 'A',
-      type: 'line',
-      stack: 'Total',
-      data: [120, 132, 101, 134, 90, 230, 210]
-    },
-    {
-      name: 'B',
-      type: 'line',
-      stack: 'Total',
-      data: [220, 182, 191, 234, 290, 330, 310]
-    },
-    {
-      name: 'C',
-      type: 'line',
-      stack: 'Total',
-      data: [150, 232, 201, 154, 190, 330, 410]
-    },
-    {
-      name: 'D',
-      type: 'line',
-      stack: 'Total',
-      data: [320, 332, 301, 334, 390, 330, 320]
-    },
-    {
-      name: 'E',
-      type: 'line',
-      stack: 'Total',
-      data: [820, 932, 901, 934, 1290, 1330, 1320]
-    }
-  ]
-}
-);
 
 function setChart() {
   const chart = echarts.init(chartContainer.value);
   chart.setOption({
     title: {
-      top: '5%',
-      left: '2.5%',
-      text: fakeChartData.value.title,
+      top: '6%',
+      left: '3%',
+      text: props.title,
       textStyle: {
         color: 'white'
       }
     },
     tooltip: {
-      trigger: 'axis', // 'axis' / 'item'
+      trigger: 'item',
+      // formatter: 'Label : {a} <br/> Y軸 : {b} <br/> 值 : {c}', // 可以放各個軸的參數 
     },
     /* 刪除 legend 代表不顯示每種顏色代表的屬性 */
     legend: {
-      bottom: '5%',
+      orient: 'vertical',
+      left: '3%',
+      top: 'center',
       textStyle: {
         color: 'white'
       }
     },
-    grid: {
-      left: '5%',
-      right: '7.25%',
-      top: '20%',
-      bottom: '17.5%',
-      containLabel: true // 屬性是否包含在 grid 內
+    series: props.data.series,
+    textStyle: {
+      color: 'white'
     },
+
     toolbox: {
       feature: {
         // saveAsImage: {}
       }
     },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: fakeChartData.value.xData
-    },
-
-    yAxis: {
-      type: 'value'
-    },
-
-    series: fakeChartData.value.series,
-
-    textStyle: {
-      color: 'white'
-    }
   });
 }
 
@@ -125,6 +80,4 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-#StackedLineChart {}
-</style>
+<style scoped></style>
