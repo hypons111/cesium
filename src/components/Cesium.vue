@@ -7,14 +7,6 @@
     </button>
   </div>
 
-  <!-- <div id="leftAside" class="aside">
-    <el-select class="el_select" v-model="value" :placeholder="placeholder" @change="switchModel(this)">
-      <el-option v-for="item in leftAsideOptions" :key="item.label" :value="item.label" :label="item.label"
-        :set="item.set" class="el_option">
-      </el-option>
-    </el-select>
-  </div> -->
-
   <!-- 右上角 button group -->
   <div id="rightAside" class="aside">
     <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
@@ -61,67 +53,29 @@ import {
   addEllipsoidEntity_EXAMPLE,
   addPolylineEntity_EXAMPLE
 } from '@/assets/javascript/cesiumUtils';
-import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
-// const placeholder = "請選擇"; //computed(() => store.getters.CURRENT_MODEL);
-const allModel = store.getters.ALL_MODEL;
-const leftAsideOptions = ref([]);
 const modalStatus = computed(() => store.getters.MODAL_STATUS);
-const currentModelSet = computed(() => store.getters.CURRENT_MODEL_SET);
-const modalArray = settings.model.ModalArray;
-const isDisablePrveModel = computed(() => store.getters.MODEL_BREADCRUMB.length === 1)
 
 onMounted(async () => {
   await initialCesium();
-  // await fetchModelList();
   await addRectangleEntity_EXAMPLE();
   await addCircleEntity_EXAMPLE();
   await addEllipsoidEntity_EXAMPLE();
   await addPolylineEntity_EXAMPLE();
 });
 
-// function fetchModelList() {
-//   leftAsideOptions.value.push({ label: allModel });
-//   modalArray[currentModelSet.value].forEach(({ label, file, set }) => {
-//     leftAsideOptions.value.push({
-//       label: label,
-//       file: file,
-//       set: set
-//     })
-//   })
-// }
-
 function backTopPreviousModel() {
-  const previousLabel = store.getters.HEADER_TITLE;
   const MODEL_BREADCRUMB = store.getters.MODEL_BREADCRUMB;
-  const previousModel = MODEL_BREADCRUMB.length === 1 ? "initial" : MODEL_BREADCRUMB.pop();
-  const currentModel = previousModel === "initial" ? previousModel : ""
-  store.commit("SET_HEADER_TITLE", previousLabel);
-  store.commit("SET_CURRENT_MODEL_SET", previousModel);
+  const previousModel = MODEL_BREADCRUMB.length === 1 ? "all" : MODEL_BREADCRUMB.pop();
+  const currentModel = previousModel === "all" ? previousModel : ""
   store.commit("SET_CURRENT_MODEL", currentModel);
+  store.commit("SET_HEADER_TITLE", previousModel);
 }
-
-// function switchModel(t) {
-//   const breadCrumb = store.getters.MODEL_BREADCRUMB;
-//   if (t.value === allModel) {
-//     store.commit("SET_CURRENT_MODEL", allModel);
-//   } else {
-//     breadCrumb.forEach(prop => {
-//       if (modalArray.hasOwnProperty(prop)) {
-//         const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
-//         store.commit("SET_CURRENT_MODEL", currentModel.label);
-//       } else {
-//         console.log(prop);
-//       }
-//     })
-//   }
-// }
 
 function initialModel() {
   store.commit("SET_HEADER_TITLE", "DEMO");
-  store.commit("SET_CURRENT_MODEL_SET", "initial");
-  store.commit("SET_CURRENT_MODEL", "initial");
+  store.commit("SET_CURRENT_MODEL", "all");
 }
 
 </script>

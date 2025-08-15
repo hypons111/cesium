@@ -1,14 +1,14 @@
 const settings = {
   viewer: {
-    ionDefaultAccessToken:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNmNjZDdjOS05ZmFhLTQ3NTItOTI5OS00NDMzN2Y0MzQwMTIiLCJpZCI6MjIxNjQ5LCJpYXQiOjE3MTgxNjIxMTV9.8N1NuOLwQDadOEF4X0m2z9SiTCR0e5OFYWUNV5WWU1U",
-    showEarth: true,
+    // ionDefaultAccessToken: process.env.ION_DEFAULT_ACCESS_TOKEN,
+    ionDefaultAccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNmNjZDdjOS05ZmFhLTQ3NTItOTI5OS00NDMzN2Y0MzQwMTIiLCJpZCI6MjIxNjQ5LCJpYXQiOjE3MTgxNjIxMTV9.8N1NuOLwQDadOEF4X0m2z9SiTCR0e5OFYWUNV5WWU1U",
+    showEarth: false,
     backgroundColor: "BLACK", // 要大階
     useGoogleMap: false,
     maximumZoomDistance: 10000000,
     minimumZoomDistance: 10
   },
-  
+
   /* 視角 初始設定 */
   camera: {
     zoomType: "setView",  // setView / flyTo
@@ -21,100 +21,107 @@ const settings = {
     r: 0,                 //  /
     flyDuration: 10,      // /  
   },
-  
+
   /* 模型 初始設定 */
   model: {
-    modelType: "local", // 使用 local / ion(banned)
-    ModalArray: {
-      initial: [
-        {
-          label: "building",
-          file: "building",
-          set: "building",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        },
-        // {
-        //   label: "harbour",
-        //   file: "harbour",
-        //   x: 121.5372,
-        //   y: 25.29257,
-        //   z: 0,
-        //   h: 90,
-        //   p: 0,
-        //   r: 0,
-        //   s: 10.25
-        // }
-      ],
-      building: [
-        {
-          label: "1F",
-          file: "1F",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        },{
-          label: "1MF",
-          file: "1MF",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        },{
-          label: "2F",
-          file: "2F",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        },{
-          label: "3F",
-          file: "3F",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        },{
-          label: "4F",
-          file: "4F",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        },{
-          label: "RF",
-          file: "RF",
-          x: 121.533,
-          y: 25.2938,
-          z: 0,
-          h: 27,
-          p: 0,
-          r: 0,
-          s: 3
-        }
-      ]
-    },
+    type: "local", // 使用 local / ion(banned)
+    // ModalArray: {
+    data: {
+     "building": {
+        label: "building",
+        file: "building",
+        parent: "",
+        x: 121.533,
+        y: 25.2938,
+        z: 0,
+        h: 27,
+        p: 0,
+        r: 0,
+        s: 3,
+        child: [
+          {
+            label: "1F",
+            file: "1F",
+            parent: "building",
+            x: 121.533,
+            y: 25.2938,
+            z: 0,
+            h: 27,
+            p: 0,
+            r: 0,
+            s: 3
+          }, {
+            label: "1MF",
+            file: "1MF",
+            parent: "building",
+            x: 121.533,
+            y: 25.2938,
+            z: 0,
+            h: 27,
+            p: 0,
+            r: 0,
+            s: 3
+          }, {
+            label: "2F",
+            file: "2F",
+            parent: "building",
+            x: 121.533,
+            y: 25.2938,
+            z: 0,
+            h: 27,
+            p: 0,
+            r: 0,
+            s: 3
+          }, {
+            label: "3F",
+            file: "3F",
+            parent: "building",
+            x: 121.533,
+            y: 25.2938,
+            z: 0,
+            h: 27,
+            p: 0,
+            r: 0,
+            s: 3
+          }, {
+            label: "4F",
+            file: "4F",
+            parent: "building",
+            x: 121.533,
+            y: 25.2938,
+            z: 0,
+            h: 27,
+            p: 0,
+            r: 0,
+            s: 3
+          }, {
+            label: "RF",
+            file: "RF",
+            parent: "building",
+            x: 121.533,
+            y: 25.2938,
+            z: 0,
+            h: 27,
+            p: 0,
+            r: 0,
+            s: 3
+          }
+        ]
+      },
+      "harbour": {
+        label: "harbour",
+        file: "harbour",
+        parent: "",
+        x: 121.5372,
+        y: 25.29257,
+        z: 0,
+        h: 90,
+        p: 0,
+        r: 0,
+        s: 10.25,
+        child: []
+      }
+    }
   },
 
   /* 巡邏起點座標 */
@@ -134,7 +141,7 @@ const settings = {
     ]
   },
 
-  /* 繪圖 袑始設定 */ 
+  /* 繪圖 袑始設定 */
   entity: {
     rectangleArray: [
       {

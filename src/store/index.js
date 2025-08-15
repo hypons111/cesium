@@ -2,12 +2,9 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    HEADER_TITLE: "DEMO",
-    CURRENT_SECTION: "cesium",
-    CURRENT_MAIN_COMPONENT: "cesium",
-    ALL_MODEL: "ALL",
-    CURRENT_MODEL: "initial",
-    CURRENT_MODEL_SET: "initial",
+    HEADER_TITLE: "DEMO", // project 名稱
+    CURRENT_SECTION: "cesium", // 現在所在的模組
+    CURRENT_MODEL: "",
     MODEL_BREADCRUMB: ["initial"],
     MODAL_STATUS: {
       IS_SHOW : false,
@@ -17,10 +14,7 @@ export default createStore({
   getters: {
     HEADER_TITLE: state => state.HEADER_TITLE,
     CURRENT_SECTION: state => state.CURRENT_SECTION,
-    CURRENT_MAIN_COMPONENT: state => state.CURRENT_MAIN_COMPONENT,
-    ALL_MODEL: state => state.ALL_MODEL,
     CURRENT_MODEL: state => state.CURRENT_MODEL,
-    CURRENT_MODEL_SET: state => state.CURRENT_MODEL_SET,
     MODEL_BREADCRUMB: state => state.MODEL_BREADCRUMB,
     MODAL_STATUS: state => state.MODAL_STATUS
   },
@@ -31,14 +25,8 @@ export default createStore({
     SET_CURRENT_SECTION(state, payload) {
       state.CURRENT_SECTION = payload;
     },
-    SET_CURRENT_MAIN_COMPONENT(state, payload) {
-      state.CURRENT_MAIN_COMPONENT = payload;
-    },
     SET_CURRENT_MODEL(state, payload) {
       state.CURRENT_MODEL = payload;
-    },
-    SET_CURRENT_MODEL_SET(state, payload) {
-      state.CURRENT_MODEL_SET = payload;
     },
     SET_MODEL_BREADCRUMB(state, payload) {
       state.MODEL_BREADCRUMB = payload;

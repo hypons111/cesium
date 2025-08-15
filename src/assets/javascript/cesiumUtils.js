@@ -8,11 +8,9 @@ import RED_TAG from "@/assets/image/label_light2.png"; // 載入 billboard icon
 import SUCCESS_TAG from "@/assets/image/typeSuccessful.png"; // 載入 billboard icon
 import WARNNING_TAG from "@/assets/image/typeWarnning.png"; // 載入 billboard icon
 
-const allModel = store.getters.ALL_MODEL;
 const currentModel = computed(() => store.getters.CURRENT_MODEL); // 正在顯示的模型
-const currentModelSet = computed(() => store.getters.CURRENT_MODEL_SET); // 正在顯示的模型
-const entityArray = []; // 全部模型的 entity
-const tagEntity = []; // 全部 label 和 billboard 的 entity
+const modelEntities = []; // 全部模型的 entity
+const tagEntities = []; // 全部 label 和 billboard 的 entity
 /* 滑鼠右鍵跳出的 panel 位置 */
 export const cesiumMenuData = ref({
   show: false,
@@ -27,7 +25,19 @@ let featureHoverStatus = undefined;
 /* 初始化 cesium */
 export async function initialCesium() {
   window.viewer = await setViewer("viewerContainer"); // 建立 viewer
-  await addGLTF(); // 加載模型
+
+  /* 載入模型 */
+  const modelType = settings.model.type; // 模型來源
+  const modelData = settings.model.data; // 模型資料
+  if(currentModel.value === "") { // 預設載入全部模型
+    for(const key in modelData) {
+      addModelEntities(modelType, modelData[key])
+    }
+  } else { // 載入已選擇的模型
+    addModelEntities(modelType, modelData[currentModel.value])
+  }
+
+  await setCamera(); // 加載模型
   await setMouseEventListener(); // 設定 event listener
 }
 
@@ -55,81 +65,78 @@ async function setViewer(container) {
   return viewer;
 }
 
-/* glTF 模型 */
-async function addGLTF() {
-  const camera = settings.camera;
-  const model = settings.model;
-  const set = currentModelSet.value;
-  let entity = undefined;
-  try {
-    const modelSetting = model.ModalArray[set];
-    let MODEL_URI = undefined;
-    for (let i = 0; i < model.ModalArray[set].length; i++) {
-      if (
-        currentModel.value === "initial" ||
-        currentModel.value === "" ||
-        currentModel.value === allModel ||
-        currentModel.value === model.ModalArray[set][i].label
-      ) {
-        /* 切換模型 */
-        if (model.modelType === "local") {
-          MODEL_URI = `./gltf/${model.ModalArray[set][i].file}.gltf`; // local model
-        } else if (model.modelType === "ion") {
-          MODEL_URI = await Cesium.IonResource.fromAssetId(
-            model.ModalArray[set][i].file
-          ); // ion model
-        }
-      }
-      const position = Cesium.Cartesian3.fromDegrees(
-        modelSetting[i].x,
-        modelSetting[i].y,
-        modelSetting[i].z
-      );
-      const heading = Cesium.Math.toRadians(modelSetting[i].h);
-      const pitch = Cesium.Math.toRadians(modelSetting[i].p);
-      const roll = Cesium.Math.toRadians(modelSetting[i].r);
-      const orientation = Cesium.Transforms.headingPitchRollQuaternion(
-        position,
-        new Cesium.HeadingPitchRoll(heading, pitch, roll)
-      );
-      entity = viewer.entities.add({
-        position: position, // 模型位置
-        orientation: orientation, // 模型角度
-        KIN_label: model.ModalArray[set][i].label,
-        KIN_file: model.ModalArray[set][i].file,
-        KIN_set: model.ModalArray[set][i].set,
-        model: {
-          uri: MODEL_URI, // 模型路徑
-          scale: modelSetting[i].s, // 模型大小
-        },
-      });
-      entityArray.push(entity);
-    }
+/* 載入模型 */
+async function addModelEntities(modelType, modelData) {
 
-    /* 鏡頭使用 模型/座標 */
-    /* 請在 cesiumConfig.js 設定 */
-    if (camera.zoomTo === "model") {
-      viewer.trackedEntity = entity;
-    } else if (camera.zoomTo === "coordinate") {
-      console.log(camera)
-      const destination = Cesium.Cartesian3.fromDegrees(
-        camera.x,
-        camera.y,
-        camera.z
-      ); // zoom 的位置, 可以是 model / Cartesian座標
-      const orientation = new Cesium.HeadingPitchRange(
-        camera.h,
-        camera.p,
-        camera.r
-      );
-      viewer.camera[camera.zoomType]({
-        destination: destination,
-        orientation: orientation,
-        duration: camera.flyDuration
-      });
-    }
-  } catch (error) {
-    console.log(`[addGLTF() ERROR] : ${error}`);
+  let entity = undefined;
+  let modalURI = "";
+
+  if (modelType === "local") {
+    modalURI = `./gltf/${modelData.file}.gltf`; // local model
+  } else if (modelType === "ion") {
+    modalURI = await Cesium.IonResource.fromAssetId(modelData.file); // ion model
+  }
+
+  const position = Cesium.Cartesian3.fromDegrees(
+    modelData.x,
+    modelData.y,
+    modelData.z
+  );
+  const heading = Cesium.Math.toRadians(modelData.h);
+  const pitch = Cesium.Math.toRadians(modelData.p);
+  const roll = Cesium.Math.toRadians(modelData.r);
+  const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+    position,
+    new Cesium.HeadingPitchRoll(heading, pitch, roll)
+  );
+
+  entity = viewer.entities.add({
+    customizedModelData: modelData,
+    customizedModelType: modelType,
+    position: position, // 模型位置
+    orientation: orientation, // 模型角度
+ 
+    model: {
+      uri: modalURI, // 模型路徑
+      scale: modelData.s, // 模型大小
+    },
+  });
+
+  modelEntities.push(entity);
+}
+
+/* 移除模型  */
+export function removeModelEntities() {
+  modelEntities.forEach((model) => {
+    viewer.entities.remove(model);
+  });
+  modelEntities.length = 0;
+}
+
+async function setCamera() {
+  const camera = settings.camera;
+  const entity = modelEntities[0]
+
+  /* 鏡頭使用 模型/座標 */
+  /* 請在 cesiumConfig.js 設定 */
+  if (camera.zoomTo === "model") {
+    viewer.trackedEntity = entity;
+  } else if (camera.zoomTo === "coordinate") {
+    const destination = Cesium.Cartesian3.fromDegrees(
+      camera.x,
+      camera.y,
+      camera.z
+    ); // zoom 的位置, 可以是 model / Cartesian座標
+    const orientation = new Cesium.HeadingPitchRange(
+      camera.h,
+      camera.p,
+      camera.r
+    );
+    viewer.camera[camera.zoomType]({
+      destination: destination,
+      orientation: orientation,
+      duration: camera.flyDuration
+    });
   }
 }
 
@@ -148,15 +155,19 @@ function setMouseEventListener() {
         if (feature) {
           switch (feature.primitive.constructor.name) {
             case "Model":
-              const primitive = feature.primitive;
-              store.commit("SET_HEADER_TITLE", primitive._id._KIN_label);
-              if (primitive._id._KIN_set) {
-                store.commit("SET_CURRENT_MODEL_SET", primitive._id._KIN_set);
-                store.commit("SET_CURRENT_MODEL", "");
-                store.commit("PUSH_MODEL_BREADCRUMB", primitive._id._KIN_set);
+              removeModelEntities()
+              const modelType = feature.primitive._id.customizedModelType;
+              const modelData = feature.primitive._id.customizedModelData;
+              store.commit("SET_HEADER_TITLE", modelData.label);
+  
+              if(modelData.child && modelData.child.length > 0) {
+                modelData.child.forEach(children => {
+                  addModelEntities(modelType, children)
+                })
               } else {
-                store.commit("SET_CURRENT_MODEL", primitive._id._KIN_file);
+                addModelEntities(modelType, modelData)
               }
+
               break;
             case "Label":
             case "Billboard":
@@ -195,12 +206,12 @@ function setMouseEventListener() {
         }
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 
-      // hover
+      // on Hover
       if (settings.other.useHover) {
         clickListener.setInputAction(function (movement) {
           const feature = viewer.scene.pick(movement.endPosition);
           if (feature && feature.primitive.constructor.name === "Model") {
-            entityArray.forEach((entity) => {
+            modelEntities.forEach((entity) => {
               entity.model.color = Cesium.Color.fromCssColorString(
                 "rgba(250, 250, 250, 0.25)"
               );
@@ -211,7 +222,7 @@ function setMouseEventListener() {
             featureHoverStatus = true;
           } else if (featureHoverStatus !== undefined) {
             featureHoverStatus = undefined;
-            entityArray.forEach((entity) => {
+            modelEntities.forEach((entity) => {
               entity.model.color = Cesium.Color.fromCssColorString(
                 "rgba(255, 255, 255, 1)"
               );
@@ -219,7 +230,7 @@ function setMouseEventListener() {
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       } else {
-        entityArray.forEach((entity) => {
+        modelEntities.forEach((entity) => {
           entity.model.color = Cesium.Color.fromCssColorString(
             "rgba(255, 255, 255, 1)"
           );
@@ -232,7 +243,7 @@ function setMouseEventListener() {
   });
 }
 
-/* 取得 tag (label + billBoard) 資料並呼叫 addTagEntity() */
+/* 取得 tag (label + billBoard) 資料並呼叫 addTagEntities() */
 function fetchTagsAndHandle() {
   /* label 是文字 */
   /* billboard 是圖片，圖片要先用 `import from` 導入 */
@@ -240,7 +251,7 @@ function fetchTagsAndHandle() {
     .get("./json/fake_tags.json")
     .then((response) => {
       response.data.tags.forEach((tag) => {
-        addTagEntity(tag);
+        addTagEntities(tag);
       });
     })
     .catch((error) => {
@@ -249,7 +260,7 @@ function fetchTagsAndHandle() {
 }
 
 /* 放置 tag (label + billBoard) */
-export function addTagEntity(tag) {
+export function addTagEntities(tag) {
   /* 用來選擇已載入的 billboard icon */
   const billBoardIcons = {
     GREEN_TAG: GREEN_TAG,
@@ -279,15 +290,15 @@ export function addTagEntity(tag) {
     },
   });
   entity.data = tag;
-  tagEntity.push(entity);
+  tagEntities.push(entity);
 }
 
 /* 移除 tag (label + billBoard) */
-export function removeTagEntity() {
-  tagEntity.forEach((tag) => {
+export function removeTagEntities() {
+  tagEntities.forEach((tag) => {
     viewer.entities.remove(tag);
   });
-  tagEntity.length = 0;
+  tagEntities.length = 0;
 }
 
 /* 加入 rectangle 範例 */
@@ -438,23 +449,23 @@ export async function resetCamera() {
 }
 
 /* 移動視角 */
-export async function setCamera(cameraData) {
-  cesiumMenuData.value.show = false;
-  const destination = Cesium.Cartesian3.fromDegrees(
-    cameraData.x,
-    cameraData.y,
-    cameraData.z
-  );
-  const orientation = new Cesium.HeadingPitchRange(
-    cameraData.h,
-    cameraData.p,
-    cameraData.r
-  );
-  viewer.camera.setView({
-    destination: destination,
-    orientation: orientation,
-  });
-}
+// export async function setCamera(cameraData) {
+//   cesiumMenuData.value.show = false;
+//   const destination = Cesium.Cartesian3.fromDegrees(
+//     cameraData.x,
+//     cameraData.y,
+//     cameraData.z
+//   );
+//   const orientation = new Cesium.HeadingPitchRange(
+//     cameraData.h,
+//     cameraData.p,
+//     cameraData.r
+//   );
+//   viewer.camera.setView({
+//     destination: destination,
+//     orientation: orientation,
+//   });
+// }
 
 /* 移動視角 */
 export async function flyCamera(cameraData) {
@@ -482,12 +493,12 @@ export default {
   resetCamera,
   setCamera,
   flyCamera,
-  addTagEntity,
+  addTagEntities,
   addRectangleEntity_EXAMPLE,
   addCircleEntity_EXAMPLE,
   addEllipsoidEntity_EXAMPLE,
   addPolylineEntity_EXAMPLE,
-  removeTagEntity
+  removeTagEntities
 };
 
 /* Forbidden Forbidden Forbidden Forbidden Forbidden */
